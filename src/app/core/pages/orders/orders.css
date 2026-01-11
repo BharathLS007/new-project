@@ -1,0 +1,111 @@
+.container {
+  margin-top: 100px;
+  padding: 20px;
+}
+
+.medicine-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table-header {
+  display: flex;
+  background-color: #f8f9fa;
+  font-weight: bold;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+  transition: background-color 0.2s;
+}
+
+.table-row:hover {
+  background-color: #f5f5f5;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.header-cell,
+.table-cell {
+  flex: 1;
+  padding: 15px;
+  text-align: center;
+  border-right: 1px solid #dee2e6;
+}
+
+.header-cell:last-child,
+.table-cell:last-child {
+  border-right: none;
+}
+
+.image-cell {
+  flex: 0 0 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.table-cell h4 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.table-cell p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.price {
+  font-weight: bold;
+  color: #28a745;
+  font-size: 1.1rem;
+}
+
+.header-cell {
+  color: #495057;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.button {
+  color: yellow;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .medicine-table {
+    font-size: 0.9rem;
+  }
+
+  .header-cell,
+  .table-cell {
+    padding: 10px;
+  }
+
+  .image-cell {
+    flex: 0 0 80px;
+  }
+
+  img {
+    width: 50px;
+    height: 50px;
+  }
+}

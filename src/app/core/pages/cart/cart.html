@@ -1,1 +1,70 @@
-<p>cart works!</p>
+<div class="container">
+    <h2>Shopping Cart</h2>
+
+    <!-- Cart Progress Steps
+<div class="cart-page">
+  <div class="row">
+<div class="trackcart">
+<div class="col-md-3 col-sm-3 col-xs-3">
+<div class="cart-step active">
+<div class="step-number">1</div>
+<div class="step-name">Shopping Cart</div>
+</div>
+</div>
+<div class="col-md-3 col-sm-3 col-xs-3">
+<div class="cart-step">
+<div class="step-number">2</div>
+<div class="step-name">Checkout</div>
+</div>
+</div>
+<div class="col-md-3 col-sm-3 col-xs-3">
+<div class="cart-step">
+<div class="step-number">3</div>
+<div class="step-name">Payment</div>
+</div>
+</div>
+<div class="col-md-3 col-sm-3 col-xs-3">
+<div class="cart-step">
+<div class="step-number">4</div>
+<div class="step-name">Order Complete</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+-->
+    <!-- Cart Content -->
+    <div class="cart-content">
+        <!-- Empty Cart Message -->
+        <div *ngIf="isEmpty()" class="empty-cart">
+            <div class="empty-cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <h3>Your cart is empty</h3>
+            <p>Add some medicines from our store to get started!</p>
+            <a routerLink="/" routerLinkActive="active-link" class="btn-continue-shopping">Continue Shopping</a>
+        </div>
+
+        <!-- Cart Items -->
+        <div *ngIf="!isEmpty()" class="cart-items-section">
+            <div class="cart-header">
+                <div class="items-count">{{totalItems()}} items in your cart</div>
+                <button class="btn-clear-cart" (click)="clearCart()" *ngIf="cartItems().length > 0"> Clear Cart
+                </button>
+            </div>
+
+            (click)="decrementQuantity(item.id)" [disabled]="item.quantity <= 1">
+                -
+                </button>
+                <span class="value">${{totalPrice().toFixed(2)}}</span>
+        </div>
+
+        <div class="checkout-actions">
+            <a href="/home" class="btn-continue-shopping">Continue Shopping</a>
+            <button class="btn-checkout" [disabled]="isEmpty()">Proceed to Checkout</button>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<app-footer></app-footer>

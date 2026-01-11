@@ -1,1 +1,30 @@
-<p>orders works!</p>
+<div class="container">
+    <h3>Order History</h3>
+
+    <div class="medicine-table">
+        <div class="table-header">
+            <div class="header-cell">Image</div>
+            <div class="header-cell">Medicine Name</div>
+            <div class="header-cell">Price</div>
+            <div class="header-cell">Quantity</div>
+        </div>
+
+        @for (med of medicines(); track med.id) {
+        <div class="table-row">
+            <div class="table-cell image-cell">
+                <img [src]="med.image" [alt]="med.name">
+            </div>
+            <div class="table-cell">
+                <h4>{{ med.name }}</h4>
+            </div>
+            <div class="table-cell">
+                <span class="price">${{ med.price }}</span>
+            </div>
+            <div class="table-cell">
+                <span class="price">{{ med.quantity }}</span>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+<app-footer></app-footer>
