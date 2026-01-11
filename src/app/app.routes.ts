@@ -17,3 +17,4 @@ export const routes: Routes = [
     { path: 'profile', component: Profile },
     { path: 'store', component: Store },
 ];
+
