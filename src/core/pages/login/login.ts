@@ -31,10 +31,16 @@ export class Login {
     }
 
     // Load saved email if remember me was checked
-    const savedEmail = localStorage.getItem('rememberedEmail');
-    if (savedEmail) {
-      this.credentials.email = savedEmail;
-      this.rememberMe = true;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        if (savedEmail) {
+          this.credentials.email = savedEmail;
+          this.rememberMe = true;
+        }
+      }
+    } catch (e) {
+      // ignore on SSR
     }
   }
 
@@ -79,10 +85,16 @@ export class Login {
       await this.authService.login(this.credentials.email, this.credentials.password);
       
       // Handle remember me
-      if (this.rememberMe) {
-        localStorage.setItem('rememberedEmail', this.credentials.email);
-      } else {
-        localStorage.removeItem('rememberedEmail');
+      try {
+        if (typeof localStorage !== 'undefined') {
+          if (this.rememberMe) {
+            localStorage.setItem('rememberedEmail', this.credentials.email);
+          } else {
+            localStorage.removeItem('rememberedEmail');
+          }
+        }
+      } catch (e) {
+        // ignore on SSR
       }
 
       this.router.navigate(['/home']);

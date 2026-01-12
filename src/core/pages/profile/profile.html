@@ -1,9 +1,37 @@
 <div class="container">
     <h1>User Profile</h1>
-    <form>
-        <div class="form-group">
-            <div class="card">
-                
-            </div>   
 
+    <div *ngIf="!user">
+        <p>No user is currently logged in.</p>
+    </div>
+
+    <div *ngIf="user">
+        <div class="card">
+            <div *ngIf="!isEditing">
+                <p><strong>Full Name:</strong> {{ user.fullName }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Phone:</strong> {{ user.phone }}</p>
+                <button type="button" (click)="startEdit()">Edit Profile</button>
+            </div>
+
+            <form *ngIf="isEditing" (ngSubmit)="save()">
+                <label>Full name</label>
+                <input name="fullName" [(ngModel)]="editUser.fullName" />
+                <div class="error" *ngIf="errors.fullName">{{ errors.fullName }}</div>
+
+                <label>Email</label>
+                <input name="email" type="email" [(ngModel)]="editUser.email" />
+                <div class="error" *ngIf="errors.email">{{ errors.email }}</div>
+
+                <label>Phone</label>
+                <input name="phone" [(ngModel)]="editUser.phone" />
+                <div class="error" *ngIf="errors.phone">{{ errors.phone }}</div>
+
+                <div class="actions">
+                    <button type="submit" [disabled]="isLoading">Save</button>
+                    <button type="button" (click)="cancelEdit()" [disabled]="isLoading">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

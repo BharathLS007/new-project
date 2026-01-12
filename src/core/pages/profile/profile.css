@@ -1,3 +1,16 @@
-*{
-    margin-top: 100px;
+:root{--gap:12px}
+.container{
+    margin: 40px auto;
+    max-width:720px;
+    padding:20px;
 }
+.card{
+    border:1px solid #ddd;
+    padding:16px;
+    border-radius:6px;
+    background:#fff;
+}
+label{display:block;margin-top:var(--gap);font-weight:600}
+input{width:100%;padding:8px;margin-top:6px;border:1px solid #ccc;border-radius:4px}
+.actions{margin-top:16px;display:flex;gap:8px}
+.error{color:#b00020;font-size:13px;margin-top:6px}

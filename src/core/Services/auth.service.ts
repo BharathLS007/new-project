@@ -38,9 +38,15 @@ export class AuthService {
 
   constructor(private router: Router) {
     // Check if user is already logged in
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      this.currentUserSubject.next(JSON.parse(savedUser));
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+          this.currentUserSubject.next(JSON.parse(savedUser));
+        }
+      }
+    } catch (e) {
+      // localStorage not available (SSR) — ignore
     }
   }
 
@@ -73,9 +79,15 @@ export class AuthService {
     this.users.push(newUser);
     
     // Save password separately (in real app, this would be hashed and stored securely)
-    const passwords = JSON.parse(localStorage.getItem('userPasswords') || '{}');
-    passwords[email] = password;
-    localStorage.setItem('userPasswords', JSON.stringify(passwords));
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const passwords = JSON.parse(localStorage.getItem('userPasswords') || '{}');
+        passwords[email] = password;
+        localStorage.setItem('userPasswords', JSON.stringify(passwords));
+      }
+    } catch (e) {
+      // ignore on SSR
+    }
 
     return newUser;
   }
@@ -91,8 +103,15 @@ export class AuthService {
     }
 
     // Check password (in real app, this would be properly hashed and verified)
-    const passwords = JSON.parse(localStorage.getItem('userPasswords') || '{}');
-    const storedPassword = passwords[email];
+    let storedPassword: string | undefined;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const passwords = JSON.parse(localStorage.getItem('userPasswords') || '{}');
+        storedPassword = passwords[email];
+      }
+    } catch (e) {
+      storedPassword = undefined;
+    }
     
     if (!storedPassword || storedPassword !== password) {
       throw { code: 'auth/wrong-password', message: 'Incorrect password' };
@@ -100,14 +119,26 @@ export class AuthService {
 
     // Set current user
     this.currentUserSubject.next(user);
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+      }
+    } catch (e) {
+      // ignore on SSR
+    }
     
     return user;
   }
 
   logout(): void {
     this.currentUserSubject.next(null);
-    localStorage.removeItem('currentUser');
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('currentUser');
+      }
+    } catch (e) {
+      // ignore on SSR
+    }
     this.router.navigate(['/login']);
   }
 
@@ -127,5 +158,43 @@ export class AuthService {
   // Helper method to simulate async operations
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Return current user details (synchronous)
+  getUserDetails(): User | null {
+    return this.getCurrentUser();
+  }
+
+  // Update user details (mock implementation)
+  async updateUserDetails(updated: Partial<User> & { id: string }): Promise<User> {
+    await this.delay(500);
+
+    const idx = this.users.findIndex(u => u.id === updated.id);
+    if (idx === -1) {
+      throw { message: 'User not found' };
+    }
+
+    const existing = this.users[idx];
+    const merged: User = {
+      ...existing,
+      ...updated,
+      createdAt: existing.createdAt
+    };
+
+    this.users[idx] = merged;
+
+    // If the updated user is the current user, update the subject and localStorage
+    if (this.currentUserSubject.value?.id === merged.id) {
+      this.currentUserSubject.next(merged);
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('currentUser', JSON.stringify(merged));
+        }
+      } catch (e) {
+        // ignore on SSR
+      }
+    }
+
+    return merged;
   }
 }
