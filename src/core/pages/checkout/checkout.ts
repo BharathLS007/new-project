@@ -2,12 +2,12 @@ import { Component, inject, computed } from '@angular/core';
 import { Footer } from '../footer/footer';
 import { CartService } from '../../Models/cart.service';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-checkout',
-  imports: [Footer, CommonModule, ReactiveFormsModule],
+  imports: [Footer, CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })

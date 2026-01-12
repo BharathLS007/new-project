@@ -1,6 +1,12 @@
 <div class="container">
   <div class="checkout-inner">
-    <div class="breadcrumb">Home &gt; Cart &gt; Checkout</div>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/" routerLinkActive="active">Home</a>
+      <span class="sep">›</span>
+      <a routerLink="/cart" routerLinkActive="active">Cart</a>
+      <span class="sep">›</span>
+      <span class="current">Checkout</span>
+    </nav>
     <div class="checkout-top">
       <div class="title">Checkout</div>
       <div class="small-note">Secure transaction • 256-bit SSL</div>
