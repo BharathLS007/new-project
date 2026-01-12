@@ -110,7 +110,7 @@
         
         <div class="checkout-actions">
           <a routerLink="/" routerLinkActive="active-link" class="btn-continue-shopping">Continue Shopping</a>
-          <button class="btn-checkout" [disabled]="isEmpty()">Proceed to Checkout</button>
+          <a *ngIf="!isEmpty()" routerLink="/checkout" class="btn-checkout">Proceed to Checkout</a>
         </div>
       </div>
     </div>
