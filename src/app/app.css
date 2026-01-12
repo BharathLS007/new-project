@@ -1,0 +1,12 @@
+/* App-level layout styles */
+.app-root { display:block; min-height:100vh; }
+main { display:block; }
+
+/* Footer spacing */
+.site-footer { padding: 2rem 0; background: transparent; color: var(--muted); }
+
+/* Utility spacing */
+.section { padding: 1.25rem 0; }
+
+/* Make images inside cards responsive by default */
+.card img { width:100%; height:auto; display:block; }

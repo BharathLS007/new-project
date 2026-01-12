@@ -17,23 +17,22 @@
 .nav-container {
   width: 100%;
   margin: 0;
-  padding: 0 20px;
+  padding: 0;
   height: 70px;
   display: flex;
   align-items: center;
-  background-color: #1a73e8;
   justify-content: space-between;
-  color:  white;
+  background-color: #1a73e8;
+  color: white;
 }
 
 /* ===== LOGO ===== */
 .logo a {
-  
-  font-size: 24px;
+  font-size: clamp(18px, 1.6vw, 24px);
   font-weight: 700;
   color: #ffffff;
   text-decoration: none;
-  margin-right: 90px;
+  margin-right: 5rem;
 }
 
 .cart-icon-container {
@@ -69,11 +68,12 @@
   display: flex;
   list-style: none;
   gap: 1rem;
+  align-items: center;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 500;
   position: relative;
@@ -81,7 +81,7 @@
 }
 
 .nav-links a:hover {
-  color: #1a73e8;
+  color: rgba(255,255,255,0.9);
 }
 
 /* Active route */
@@ -158,29 +158,35 @@
     display: flex;
   }
 
+
   .menu {
     position: absolute;
     top: 70px;
     left: 0;
     width: 100%;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: var(--bg, #ffffff);
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1100;
   }
 
-  .menu.active {
-    max-height: 30rem;          /* To adjust the dropdown menu height in hamburger menu*/
+  .menu.active { 
+    max-height: 50rem;          /* To adjust the dropdown menu height in hamburger menu*/
+    align-items: flex-start;
   }
 
   .nav-links {
-    margin-left: 1rem;
-    padding: 15px 0;
+    margin: 0.5rem 1rem;
+    padding: 8px 0;
   }
 
   .nav-links a {
     font-size: 18px;
+    color: var(--muted, #6b7280);
+    padding: 10px 0;
+    display: block;
   }
 }

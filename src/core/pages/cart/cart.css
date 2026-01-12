@@ -1,16 +1,15 @@
 /* Container and Basic Styling */
 .container {
-    max-width: 1200px;
+    max-width: var(--container-max, 1200px);
     margin: 0 auto;
     padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 h2 {
     color: #2c3e50;
     text-align: center;
     margin-bottom: 30px;
-    margin-top: 100px;
+    margin-top: 0;
     font-size: 2rem;
     font-weight: 600;
 }
