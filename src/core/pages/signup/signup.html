@@ -1,0 +1,150 @@
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Create Account</h1>
+        <p>Join MediShop for convenient medicine delivery</p>
+      </div>
+
+      <form class="auth-form" (ngSubmit)="onSignup()" #signupForm="ngForm">
+        <!-- Full Name Field -->
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              [(ngModel)]="user.fullName"
+              placeholder="Enter your full name"
+              [class.error]="errors.fullName"
+              required
+            />
+            <span class="icon"></span>
+          </div>
+          <div *ngIf="errors.fullName" class="error-message">
+            {{ errors.fullName }}
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="user.email"
+              placeholder="Enter your email"
+              [class.error]="errors.email"
+              required
+            />
+            <span class="icon"></span>
+          </div>
+          <div *ngIf="errors.email" class="error-message">
+            {{ errors.email }}
+          </div>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <div class="input-wrapper">
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              [(ngModel)]="user.phone"
+              placeholder="Enter your phone number"
+              [class.error]="errors.phone"
+              required
+            />
+            <span class="icon"></span>
+          </div>
+          <div *ngIf="errors.phone" class="error-message">
+            {{ errors.phone }}
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              name="password"
+              [(ngModel)]="user.password"
+              placeholder="Create a password"
+              [class.error]="errors.password"
+              required
+            />
+            <span class="icon"></span>
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility('password')"
+            >
+              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+          <div *ngIf="errors.password" class="error-message">
+            {{ errors.password }}
+          </div>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="input-wrapper">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="confirmPassword"
+              name="confirmPassword"
+              [(ngModel)]="user.confirmPassword"
+              placeholder="Confirm your password"
+              [class.error]="errors.confirmPassword"
+              required
+            />
+            <span class="icon"></span>
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility('confirmPassword')"
+            >
+              {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+          <div *ngIf="errors.confirmPassword" class="error-message">
+            {{ errors.confirmPassword }}
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="auth-button"
+          [disabled]="isLoading"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">Create Account</span>
+          <span *ngIf="isLoading" class="loading-text">
+            <span class="spinner"></span>
+            Creating Account...
+          </span>
+        </button>
+
+        <!-- Login Link -->
+        <div class="auth-footer">
+          <p>
+            Already have an account?
+            <button type="button" routerLink="/login" routerLinkActive="active-link" class="link-button" (click)="navigateToLogin()">
+              Sign In
+            </button>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

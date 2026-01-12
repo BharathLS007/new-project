@@ -1,0 +1,110 @@
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your MediShop account</p>
+      </div>
+
+      <form class="auth-form" (ngSubmit)="onLogin()" #loginForm="ngForm">
+        <!-- General Error Message -->
+        <div *ngIf="errors.general" class="error-message general-error">
+          {{ errors.general }}
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="credentials.email"
+              placeholder="Enter your email"
+              [class.error]="errors.email"
+              required
+              autocomplete="email"
+            />
+            <span class="icon"></span>
+          </div>
+          <div *ngIf="errors.email" class="error-message">
+            {{ errors.email }}
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              name="password"
+              [(ngModel)]="credentials.password"
+              placeholder="Enter your password"
+              [class.error]="errors.password"
+              required
+              autocomplete="current-password"
+            />
+            <span class="icon"></span>
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+            >
+              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+          <div *ngIf="errors.password" class="error-message">
+            {{ errors.password }}
+          </div>
+        </div>
+
+        <!-- Remember Me and Forgot Password -->
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [(ngModel)]="rememberMe"
+              name="rememberMe"
+            />
+            <span class="checkmark"></span>
+            Remember me
+          </label>
+          <button
+            type="button"
+            class="link-button"
+            (click)="navigateToForgotPassword()"
+          >
+            Forgot Password?
+          </button>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="auth-button"
+          [disabled]="isLoading"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading" class="loading-text">
+            <span class="spinner"></span>
+            Signing In...
+          </span>
+        </button>
+
+        <!-- Signup Link -->
+        <div class="auth-footer">
+          <p>
+            Don't have an account?
+            <button type="button" routerLink="/signup" routerLinkActive="active-link"class="link-button" (click)="navigateToSignup()">
+              Create Account
+            </button>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

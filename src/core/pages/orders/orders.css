@@ -1,0 +1,157 @@
+/* Page container */
+.container {
+    margin-top: 110px;
+    padding: 24px;
+    background: #f4f7fb;
+    min-height: 100vh;
+}
+
+/* Table wrapper */
+.medicine-table {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.table-header {
+    display: flex;
+    background: linear-gradient(135deg, #0d6efd, #4dabf7);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+/* Rows */
+.table-row {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eef1f5;
+    transition: all 0.25s ease;
+}
+
+.table-row:hover {
+    background-color: #f8fbff;
+    transform: translateY(-1px);
+}
+
+/* Cells */
+.header-cell,
+.table-cell {
+    flex: 1;
+    padding: 16px 14px;
+    text-align: center;
+}
+
+.header-cell {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    opacity: 0.95;
+}
+
+.table-cell {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* Image cell */
+.image-cell {
+    flex: 0 0 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Medicine image */
+img {
+    width: 62px;
+    height: 62px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Medicine name */
+.table-cell h4 {
+    margin: 0;
+    color: #212529;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+/* Subtitle / order info */
+.table-cell p {
+    margin-top: 4px;
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* Price */
+.price {
+    font-weight: 700;
+    color: #198754;
+    font-size: 1.1rem;
+}
+
+/* Button style */
+.button {
+    background: linear-gradient(135deg, #ffc107, #ffca2c);
+    color: #212529;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.button:hover {
+    background: linear-gradient(135deg, #ffca2c, #ffc107);
+    transform: scale(1.05);
+}
+
+/* Last row cleanup */
+.table-row:last-child {
+    border-bottom: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+
+    .container {
+        padding: 14px;
+    }
+
+    .medicine-table {
+        border-radius: 10px;
+        font-size: 0.9rem;
+    }
+
+    .header-cell,
+    .table-cell {
+        padding: 12px 8px;
+    }
+
+    .image-cell {
+        flex: 0 0 85px;
+    }
+
+    img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .table-cell h4 {
+        font-size: 0.95rem;
+    }
+
+    .price {
+        font-size: 1rem;
+    }
+}
+

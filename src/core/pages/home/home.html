@@ -1,0 +1,79 @@
+<div class="container">
+    <div class="img1">
+    </div>
+    <div class="container">
+        <div class="message-container">
+            <h3>Welcome back! </h3>
+        </div>
+        <div class="banner">
+            <!---------------
+            <div class="offerbanner">
+                <a href=""><img [src]="offerImage" alt="SpecialOffers"></a>
+                <p class="prescription-text">Click here to see the offer</p>
+            </div>
+-->
+            <div class="upload-prescription">
+                <a routerLink="/medlist" routerLinkActive="active-link" class="prescription-link">                   
+                    <h1>Flat 10% off</h1>
+                    <p>on all products' description</p>
+                </a>
+            </div>
+
+            <div class="carousel-container">
+                <div class="carousel-slide" *ngFor="let banner of banners; let i = index"
+                    [class.active]="i === currentIndex">
+                    <img [src]="banner.img" [alt]="banner.title">
+                    <div class="carousel-text">
+                        <h2>{{banner.title}}</h2>
+                        <p>{{banner.subtitle}}</p>
+                    </div>
+                </div>
+
+                <!-- Navigation buttons -->
+                <button class="prev" (click)="prev()">&#10094;</button>
+                <button class="next" (click)="next()">&#10095;</button>
+
+                <!-- Dots -->
+                <div class="dots">
+                    <span *ngFor="let banner of banners; let i = index" [class.active]="i === currentIndex"
+                        (click)="currentIndex = i"></span>
+                </div>
+            </div>
+
+            <!-------
+
+            <div class="upload-prescription">
+                <a routerLink="/" routerLinkActive="active-link" class="prescription-link">
+                    <i class="fa-solid fa-file-medical prescription-icon"></i>
+                    <p class="prescription-text">upload prescription</p>
+                </a>
+            </div>
+-->
+        </div>
+        <div class="medicine-grid">
+            @for (med of medicines(); track med.id) {
+            <div class="medicine-card">
+                <div class="card-image">
+                    <img [src]="med.image" [alt]="med.name">
+                </div>
+                <div class="card-content">
+                    <h4 class="medicine-name">{{ med.name }}</h4>
+                    <div class="price">${{ med.price }}</div>
+                    <!-------
+                     Not using quantity controls for now in Home page moved to Add to cart to avoid confusion and keep UI clean.
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" (click)="updateQuantity(med.id, -1)">-</button>
+                        <span class="quantity">{{ med.quantity }}</span>
+                        <button class="quantity-btn" (click)="updateQuantity(med.id, 1)">+</button>
+                    </div>        
+                    -->
+                    <button class="add-to-cart-btn" (click)="addToCart(med)">Add to Cart</button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<app-footer></app-footer>
