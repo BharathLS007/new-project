@@ -31,6 +31,10 @@ export class Home {
   ];
 
   currentIndex = 0;
+  // Touch / drag state
+  private touchStartX: number | null = null;
+  private touchCurrentX: number | null = null;
+  private isDragging = false;
 
   // Next slide
   next() {
@@ -45,6 +49,68 @@ export class Home {
   // Auto slide every 5 seconds
   constructor() {
     setInterval(() => this.next(), 5000);
+  }
+
+  // Touch handlers for mobile
+  onTouchStart(event: TouchEvent) {
+    this.isDragging = true;
+    this.touchStartX = event.touches[0].clientX;
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (!this.isDragging || this.touchStartX === null) return;
+    this.touchCurrentX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(_event: TouchEvent) {
+    if (!this.isDragging || this.touchStartX === null || this.touchCurrentX === null) {
+      this.resetTouch();
+      return;
+    }
+    const dx = this.touchCurrentX - this.touchStartX;
+    if (dx > 50) {
+      this.prev();
+    } else if (dx < -50) {
+      this.next();
+    }
+    this.resetTouch();
+  }
+
+  // Mouse drag handlers for desktop
+  onMouseDown(event: MouseEvent) {
+    this.isDragging = true;
+    this.touchStartX = event.clientX;
+  }
+
+  onMouseMove(event: MouseEvent) {
+    if (!this.isDragging || this.touchStartX === null) return;
+    this.touchCurrentX = event.clientX;
+  }
+
+  onMouseUp(_event: MouseEvent) {
+    if (!this.isDragging) return;
+    if (this.touchStartX === null || this.touchCurrentX === null) {
+      this.resetTouch();
+      return;
+    }
+    const dx = this.touchCurrentX - this.touchStartX;
+    if (dx > 50) {
+      this.prev();
+    } else if (dx < -50) {
+      this.next();
+    }
+    this.resetTouch();
+  }
+
+  onMouseLeave(_event: MouseEvent) {
+    // if user drags out of container, finalize
+    if (this.isDragging) this.onMouseUp(_event as any);
+  }
+
+  private resetTouch() {
+    this.isDragging = false;
+    this.touchStartX = null;
+    this.touchCurrentX = null;
   }
 
   updateQuantity(id: string, change: number) {
