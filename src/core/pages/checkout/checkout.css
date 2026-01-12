@@ -1,30 +1,92 @@
 .container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 10px;
+  max-width: 1100px;
+  margin: 28px auto;
+  padding: 18px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
+.container > h2 { color: #0a4e9b; margin-bottom: 12px; }
 .checkout-content {
   display: flex;
-  gap: 20px;
+  gap: 28px;
+  align-items: flex-start;
 }
-.order-summary {
-  flex: 1 1 40%;
-  border: 1px solid #ddd;
-  padding: 12px;
-  border-radius: 6px;
+.order-summary, .shipping-form {
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(20,40,70,0.06);
+  border-radius: 10px;
+  padding: 18px;
 }
-.shipping-form {
-  flex: 1 1 60%;
-  border: 1px solid #ddd;
-  padding: 12px;
-  border-radius: 6px;
-}
+.order-summary { flex: 0 0 36%; }
+.shipping-form { flex: 1 1 64%; }
+.order-summary h3, .shipping-form h3 { margin-top: 0; color:#12355b; }
 .summary-item {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px dashed #eee;
+  padding: 8px 0;
+  border-bottom: 1px dashed #f0f4f8;
 }
-.summary-total { display:flex; justify-content:space-between; margin-top:12px; font-weight:600; }
-.btn-place-order { background:#0a74da; color:#fff; border:none; padding:10px 16px; border-radius:4px; cursor:pointer; }
+.summary-total { display:flex; justify-content:space-between; margin-top:14px; font-weight:700; font-size:1.05rem; }
+
+label { display:block; margin-top:12px; font-weight:600; color:#223347; }
+input[type="text"], textarea {
+  width:100%;
+  padding:10px 12px;
+  margin-top:6px;
+  border:1px solid #e2e8f0;
+  border-radius:8px;
+  background:#fbfdff;
+  box-sizing:border-box;
+}
+.error { color:#c53030; font-size:0.9rem; margin-top:6px; }
+.checkout-actions { margin-top:18px; display:flex; gap:12px; align-items:center; }
+.btn-place-order {
+  background: linear-gradient(90deg,#0a74da 0%,#0077c8 100%);
+  color:#fff; border:none; padding:12px 18px; border-radius:8px; cursor:pointer; font-weight:700;
+  box-shadow: 0 6px 18px rgba(8,101,173,0.18);
+}
+.btn-place-order[disabled] { opacity:0.6; cursor:not-allowed; box-shadow:none; }
 .order-confirmation { text-align:center; padding:40px 0; }
+
+@media (max-width: 880px) {
+  .checkout-content { flex-direction: column; }
+  .order-summary { order: 2; }
+  .shipping-form { order: 1; }
+}
+
+/* --- Amazon-like polish --- */
+body { background: #f3f4f6; }
+.container { background: transparent; }
+.checkout-inner {
+  background: #fff;
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.breadcrumb {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 12px;
+}
+.checkout-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+.checkout-top .title { font-size:20px; color:#111; font-weight:700; }
+.checkout-grid { display:grid; grid-template-columns: 1fr 380px; gap:24px; }
+.order-summary { padding:16px 18px; }
+.order-summary .summary-item { padding:10px 0; border-bottom:1px solid #eee; }
+.product-name { font-weight:600; color:#222; }
+.product-meta { color:#6b7280; font-size:13px; }
+.summary-total { font-size:1.1rem; color:#111; }
+.shipping-form { padding:18px; }
+.form-section { background:#fafafa; padding:14px; border-radius:6px; border:1px solid #f0f0f0; }
+input[type="text"], textarea { transition: box-shadow .12s ease, border-color .12s ease; }
+input[type="text"]:focus { outline:none; border-color:#ff9900; box-shadow:0 0 0 3px rgba(255,153,0,0.08); }
+.error { color:#b91c1c; }
+.btn-place-order { background: #ff9900; color:#111; font-weight:800; padding:14px 20px; border-radius:6px; box-shadow:0 6px 18px rgba(255,153,0,0.18); }
+.btn-place-order:hover { filter:brightness(.98); }
+.price-block { background:#fff; padding:12px; border-radius:6px; border:1px solid #e6e6e6; }
+.small-note { color:#6b7280; font-size:13px; margin-top:8px; }
+
+@media (max-width: 880px) {
+  .checkout-grid { grid-template-columns: 1fr; }
+  .checkout-top { flex-direction:column; align-items:flex-start; gap:8px; }
+  .btn-place-order { width:100%; }
+}
