@@ -1,30 +1,156 @@
-<div class="container">
-    <h3>Order History</h3>
+<div class="orders-container">
+  <div class="orders-header">
+    <h1>Your Orders</h1>
+    <p class="orders-count" *ngIf="userOrders().length > 0">{{userOrders().length}} {{userOrders().length === 1 ? 'order' : 'orders'}}</p>
+    <p class="no-orders" *ngIf="userOrders().length === 0">You haven't placed any orders yet</p>
+  </div>
 
-    <div class="medicine-table">
-        <div class="table-header">
-            <div class="header-cell">Image</div>
-            <div class="header-cell">Medicine Name</div>
-            <div class="header-cell">Price</div>
-            <div class="header-cell">Quantity</div>
-        </div>
-
-        @for (med of medicines(); track med.id) {
-        <div class="table-row">
-            <div class="table-cell image-cell">
-                <img [src]="med.image" [alt]="med.name">
-            </div>
-            <div class="table-cell">
-                <h4>{{ med.name }}</h4>
-            </div>
-            <div class="table-cell">
-                <span class="price">${{ med.price }}</span>
-            </div>
-            <div class="table-cell">    
-                <span class="price">{{ med.quantity }}</span>
-            </div>
-        </div>
-        }
+  <!-- No Orders State -->
+  <div class="no-orders-container" *ngIf="userOrders().length === 0">
+    <div class="empty-state">
+      <div class="empty-icon">📦</div>
+      <h2>No Orders Yet</h2>
+      <p>Start shopping to see your orders here</p>
+      <a routerLink="/store" class="btn-primary">Continue Shopping</a>
     </div>
+  </div>
+
+  <!-- Orders List -->
+  <div class="orders-list" *ngIf="userOrders().length > 0">
+    <div *ngFor="let order of userOrders()" 
+         class="order-card"
+         [class.expanded]="expandedOrderId() === order.id">
+      
+      <!-- Order Header -->
+      <div class="order-header" (click)="selectOrder(order)">
+        <div class="order-info">
+          <h3>{{order.orderNumber}}</h3>
+          <p class="order-date">{{order.createdAt | date: 'MMM d, yyyy'}}</p>
+        </div>
+
+        <div class="order-status">
+          <div class="status-badge" [style.backgroundColor]="statusColors[order.status]">
+            {{statusLabels[order.status]}}
+          </div>
+        </div>
+
+        <div class="order-total">
+          <p class="total-label">Total</p>
+          <p class="total-amount">${{order.total.toFixed(2)}}</p>
+        </div>
+
+        <div class="expand-icon" [class.rotated]="expandedOrderId() === order.id">▼</div>
+      </div>
+
+      <!-- Order Details (Expandable) -->
+      <div class="order-details" *ngIf="expandedOrderId() === order.id">
+        
+        <!-- Order Progress/Tracking -->
+        <div class="order-progress">
+          <h4>Delivery Status</h4>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getOrderProgress(order.status)"></div>
+          </div>
+          <div class="status-timeline">
+            <div class="timeline-item" [class.completed]="isStatusCompleted('CONFIRMED', order.status)">
+              <div class="timeline-dot"></div>
+              <p>Confirmed</p>
+            </div>
+            <div class="timeline-item" [class.completed]="isStatusCompleted('PROCESSING', order.status)">
+              <div class="timeline-dot"></div>
+              <p>Processing</p>
+            </div>
+            <div class="timeline-item" [class.completed]="isStatusCompleted('SHIPPED', order.status)">
+              <div class="timeline-dot"></div>
+              <p>Shipped</p>
+            </div>
+            <div class="timeline-item" [class.completed]="isStatusCompleted('DELIVERED', order.status)">
+              <div class="timeline-dot"></div>
+              <p>Delivered</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tracking Updates -->
+        <div class="tracking-updates">
+          <h4>Tracking Details</h4>
+          <div *ngFor="let update of order.trackingUpdates" class="tracking-item">
+            <div class="tracking-time">
+              <p>{{update.timestamp | date: 'MMM d, yyyy HH:mm'}}</p>
+            </div>
+            <div class="tracking-content">
+              <p class="tracking-status">{{update.status}}</p>
+              <p class="tracking-message">{{update.message}}</p>
+              <p class="tracking-location" *ngIf="update.location">📍 {{update.location}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="order-section">
+          <h4>Shipping Address</h4>
+          <div class="address-box">
+            <p><strong>{{order.shippingAddress.name}}</strong></p>
+            <p>{{order.shippingAddress.address}}</p>
+            <p>{{order.shippingAddress.city}}</p>
+            <p>{{order.shippingAddress.phone}}</p>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="order-section">
+          <h4>Items Ordered</h4>
+          <div class="items-list">
+            <div *ngFor="let item of order.items" class="item-row">
+              <div class="item-name">{{item.name}}</div>
+              <div class="item-qty">Qty: {{item.quantity}}</div>
+              <div class="item-price">${{item.subtotal.toFixed(2)}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-section">
+          <h4>Order Summary</h4>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>${{order.subtotal.toFixed(2)}}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>{{order.shipping === 0 ? 'FREE' : '$' + order.shipping.toFixed(2)}}</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax</span>
+            <span>${{order.tax.toFixed(2)}}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>${{order.total.toFixed(2)}}</span>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="order-section">
+          <h4>Payment Method</h4>
+          <p>{{order.paymentMethod === 'COD' ? 'Cash on Delivery' : order.paymentMethod}}</p>
+        </div>
+
+        <!-- Order Actions -->
+        <div class="order-actions">
+          <button type="button" class="btn-simulate" (click)="simulateShipping(order.id)" *ngIf="order.status !== 'DELIVERED' && order.status !== 'CANCELLED'">
+            📊 Simulate Next Status
+          </button>
+          <button type="button" class="btn-cancel" (click)="cancelOrder(order.id)" *ngIf="order.status === 'CONFIRMED' || order.status === 'PENDING'">
+            ✕ Cancel Order
+          </button>
+          <button type="button" class="btn-reorder" (click)="selectOrder(order)">
+            🛒 Reorder
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <app-footer></app-footer>

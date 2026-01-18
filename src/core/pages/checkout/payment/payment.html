@@ -1,0 +1,92 @@
+<div class="payment-wrapper">
+  <!-- Payment Methods Selection -->
+  <div class="payment-methods-container">
+    <h3 class="section-title">Choose a Payment Method</h3>
+    
+    <div class="methods-grid">
+      <div *ngFor="let method of paymentMethods()"
+           class="method-card"
+           [class.selected]="selectedPaymentMethod() === method.id"
+           [class.disabled]="!method.available"
+           (click)="method.available && selectPaymentMethod(method.id)">
+        <div class="method-icon">{{method.icon}}</div>
+        <div class="method-info">
+          <h4>{{method.displayName}}</h4>
+          <p>{{method.description}}</p>
+        </div>
+        <div class="method-radio">
+          <div *ngIf="selectedPaymentMethod() === method.id" class="radio-checked"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Details Card -->
+  <div class="payment-details-card">
+    <div class="details-header">
+      <h3>Payment Summary</h3>
+    </div>
+
+    <div class="details-content">
+      <div class="detail-row">
+        <span>Payment Method:</span>
+        <span class="detail-value">{{getPaymentMethodDetails(selectedPaymentMethod())?.displayName}}</span>
+      </div>
+      
+      <div class="detail-row highlight" *ngIf="selectedPaymentMethod() === 'COD'">
+        <div class="info-box">
+          <p>✓ Cash on Delivery enabled</p>
+          <p>Pay securely when your order arrives</p>
+        </div>
+      </div>
+
+      <div class="detail-row highlight" *ngIf="selectedPaymentMethod() === 'RAZORPAY'">
+        <div class="info-box">
+          <p>✓ Razorpay payment gateway</p>
+          <p>Your payment will be processed securely</p>
+        </div>
+      </div>
+
+      <div class="detail-row total">
+        <span>Amount to Pay:</span>
+        <span class="amount">${{totalAmount().toFixed(2)}}</span>
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-box" *ngIf="paymentError()">
+        <p>⚠ {{paymentError()}}</p>
+      </div>
+
+      <!-- Processing Status -->
+      <div class="processing-box" *ngIf="processingPayment()">
+        <div class="spinner"></div>
+        <p>Processing your payment...</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="payment-actions" *ngIf="!processingPayment()">
+        <button type="button" 
+                class="btn-payment"
+                (click)="processPayment(selectedPaymentMethod())"
+                [disabled]="processingPayment()">
+          <span *ngIf="selectedPaymentMethod() === 'COD'">Place Order with COD</span>
+          <span *ngIf="selectedPaymentMethod() !== 'COD'">Proceed to {{getPaymentMethodDetails(selectedPaymentMethod())?.displayName}}</span>
+        </button>
+      </div>
+
+      <!-- Security Badge -->
+      <div class="security-badge">
+        <p>🔒 Your payment information is encrypted and secure</p>
+        <p>We use industry-standard SSL encryption</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms and Conditions -->
+  <div class="terms-section">
+    <input type="checkbox" id="agreeTerms" />
+    <label for="agreeTerms">
+      I agree to the <a href="#" class="link">Terms and Conditions</a> and <a href="#" class="link">Privacy Policy</a>
+    </label>
+  </div>
+</div>

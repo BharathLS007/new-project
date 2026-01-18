@@ -1,20 +1,23 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Footer } from '../footer/footer';
 import { CartService } from '../../Models/cart.service';
+import { OrderService } from '../../Models/order.service';
 import { ShippingAddressComponent, Address } from './shipping-address/shipping-address';
+import { PaymentComponent } from './payment/payment';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-checkout',
-  imports: [Footer, CommonModule, ReactiveFormsModule, RouterLink, FormsModule, ShippingAddressComponent],
+  imports: [Footer, CommonModule, ReactiveFormsModule, RouterLink, FormsModule, ShippingAddressComponent, PaymentComponent],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })
 export class Checkout {
   private cartService = inject(CartService);
+  private orderService = inject(OrderService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
@@ -25,12 +28,14 @@ export class Checkout {
   currentStep = 1;
   isOrdered = false;
   orderNumber = '';
-  selectedPaymentMethod = 'Credit Card';
+  selectedPaymentMethod = signal('COD');
   estimatedDeliveryDate = this.getEstimatedDelivery();
 
   // Address management
   savedAddresses = signal<Address[]>([]);
   selectedAddress = signal<Address | null>(null);
+
+  paymentMethods = this.orderService.paymentMethods;
 
   constructor() {
     // Load saved addresses from localStorage
@@ -87,6 +92,14 @@ export class Checkout {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
+  onPaymentMethodSelected(methodId: string): void {
+    this.selectedPaymentMethod.set(methodId);
+  }
+
+  onPaymentCompleted(paymentData: { method: string; transactionId: string }): void {
+    this.placeOrder(paymentData);
+  }
+
   nextStep(): void {
     if (this.currentStep === 1 && this.isAddressComplete()) {
       this.currentStep = 2;
@@ -112,21 +125,60 @@ export class Checkout {
     }
   }
 
-  placeOrder(): void {
-    if (this.cartItems().length === 0) return;
-    if (!this.selectedAddress()) {
-      alert('Please select a shipping address');
+  placeOrder(paymentData: { method: string; transactionId: string }): void {
+    if (this.cartItems().length === 0 || !this.selectedAddress()) {
       return;
     }
 
     const address = this.selectedAddress();
-    console.log('Placing order with address:', address);
-    console.log('Payment method:', this.selectedPaymentMethod);
+    const items = this.cartItems();
+    const subtotal = this.totalPrice();
+    const tax = subtotal * 0.08;
+    const shipping = 0;
+    const total = subtotal + tax + shipping;
 
-    this.orderNumber = 'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    // Create order
+    const order = this.orderService.createOrder({
+      orderNumber: 'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+      userId: 'user_' + Date.now(),
+      items: items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        subtotal: item.price * item.quantity,
+      })),
+      shippingAddress: {
+        name: address!.name,
+        address: address!.address,
+        city: address!.city,
+        phone: address!.phone,
+      },
+      paymentMethod: paymentData.method as any,
+      status: 'CONFIRMED',
+      subtotal,
+      tax,
+      shipping,
+      total,
+      estimatedDelivery: this.estimatedDeliveryDate,
+    });
+
+    console.log('Order created:', order);
+    console.log('Payment method:', paymentData.method);
+    console.log('Transaction ID:', paymentData.transactionId);
+
+    // Clear cart
     this.cartService.clearCart();
+
+    // Show confirmation
+    this.orderNumber = order.orderNumber;
     this.isOrdered = true;
 
-    setTimeout(() => this.router.navigate(['/orders']), 2000);
+    // Auto-redirect to orders
+    setTimeout(() => {
+      this.router.navigate(['/orders'], {
+        queryParams: { orderId: order.id },
+      });
+    }, 2500);
   }
 }

@@ -100,31 +100,21 @@
             <div class="step-title">
               <span class="step-badge">3</span>
               <h3>Payment Method</h3>
-              <p class="step-preview">{{selectedPaymentMethod}}</p>
+              <p class="step-preview">{{selectedPaymentMethod()}}</p>
             </div>
             <button type="button" class="btn-edit">Edit</button>
           </div>
           <div class="step-content" *ngIf="currentStep >= 3 && currentStep <= 3">
-            <div class="payment-options">
-              <label class="payment-option" [class.selected]="selectedPaymentMethod === 'Credit Card'">
-                <input type="radio" name="payment" value="Credit Card" [(ngModel)]="selectedPaymentMethod" />
-                <div class="payment-icon">💳</div>
-                <div class="payment-label">Credit Card</div>
-              </label>
-              <label class="payment-option" [class.selected]="selectedPaymentMethod === 'Debit Card'">
-                <input type="radio" name="payment" value="Debit Card" [(ngModel)]="selectedPaymentMethod" />
-                <div class="payment-icon">💳</div>
-                <div class="payment-label">Debit Card</div>
-              </label>
-              <label class="payment-option" [class.selected]="selectedPaymentMethod === 'PayPal'">
-                <input type="radio" name="payment" value="PayPal" [(ngModel)]="selectedPaymentMethod" />
-                <div class="payment-icon">🅿️</div>
-                <div class="payment-label">PayPal</div>
-              </label>
-            </div>
-            <p class="demo-note">💡 This is a demo. No actual payment processing occurs.</p>
-            <button type="button" class="btn-primary" (click)="nextStep()">
-              Review Your Order
+            <app-payment
+              [paymentMethods]="paymentMethods"
+              [selectedPaymentMethod]="selectedPaymentMethod()"
+              [totalAmount]="totalPrice() * 1.08"
+              (paymentMethodSelected)="onPaymentMethodSelected($event)"
+              (paymentCompleted)="onPaymentCompleted($event)">
+            </app-payment>
+
+            <button type="button" class="btn-secondary" (click)="previousStep()" style="margin-top: 16px;">
+              Back
             </button>
           </div>
         </section>
@@ -149,7 +139,7 @@
 
             <div class="review-section">
               <h4>Payment Method</h4>
-              <p>{{selectedPaymentMethod}}</p>
+              <p>{{selectedPaymentMethod()}}</p>
             </div>
 
             <div class="review-items">
@@ -161,8 +151,8 @@
               </div>
             </div>
 
-            <button type="button" class="btn-primary btn-large" (click)="placeOrder()">
-              Place Your Order
+            <button type="button" class="btn-primary btn-large" (click)="nextStep()" style="margin-top: 16px;">
+              Proceed to Payment
             </button>
             <button type="button" class="btn-secondary" (click)="previousStep()">
               Back
