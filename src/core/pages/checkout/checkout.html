@@ -1,83 +1,219 @@
 <div class="container">
   <div class="checkout-inner">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a routerLink="/" routerLinkActive="active">Home</a>
-      <span class="sep">›</span>
-      <a routerLink="/cart" routerLinkActive="active">Cart</a>
-      <span class="sep">›</span>
-      <span class="current">Checkout</span>
-    </nav>
-    <div class="checkout-top">
-      <div class="title">Checkout</div>
-      <div class="small-note">Secure transaction • 256-bit SSL</div>
-    </div>
-
-    <div *ngIf="isOrdered" class="order-confirmation">
-      <h3>Thank you! Your order has been placed.</h3>
-      <p>You will be redirected to your orders shortly.</p>
-    </div>
-
-    <div *ngIf="!isOrdered" class="checkout-grid">
-      <div class="shipping-column">
-        <div class="form-section">
-          <h3>Shipping Address</h3>
-          <form [formGroup]="shippingForm" (ngSubmit)="placeOrder()">
-            <label>Name</label>
-            <input formControlName="name" type="text" placeholder="Full name" />
-            <div class="error" *ngIf="shippingForm.get('name')?.touched && shippingForm.get('name')?.invalid">Name is required</div>
-
-            <label>Address</label>
-            <input formControlName="address" type="text" placeholder="Street address, unit, etc." />
-            <div class="error" *ngIf="shippingForm.get('address')?.touched && shippingForm.get('address')?.invalid">Address is required</div>
-
-            <label>City</label>
-            <input formControlName="city" type="text" placeholder="City" />
-            <div class="error" *ngIf="shippingForm.get('city')?.touched && shippingForm.get('city')?.invalid">City is required</div>
-
-            <label>Phone</label>
-            <input formControlName="phone" type="text" placeholder="Phone number" />
-            <div class="error" *ngIf="shippingForm.get('phone')?.touched && shippingForm.get('phone')?.invalid">Enter a valid phone number</div>
-
-            <div class="checkout-actions">
-              <button type="submit" class="btn-place-order" [disabled]="shippingForm.invalid || cartItems().length === 0">Add</button>
-            </div>
-          </form>
+    <!-- Header -->
+    <div class="checkout-header">
+      <div class="logo-section">
+        <h1 routerLink="/" class="logo">MediShop</h1>
+      </div>
+      <div class="progress-tracker">
+        <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+          <div class="step-number">1</div>
+          <div class="step-label">Address</div>
         </div>
-
-        <div class="form-section" style="margin-top:16px;">
-          <h3>Payment</h3>
-          <p class="product-meta">This demo doesn't process payments. Integrate your payment gateway here.</p>
+        <div class="step-connector" [class.active]="currentStep > 1"></div>
+        <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+          <div class="step-number">2</div>
+          <div class="step-label">Shipping</div>
+        </div>
+        <div class="step-connector" [class.active]="currentStep > 2"></div>
+        <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
+          <div class="step-number">3</div>
+          <div class="step-label">Payment</div>
+        </div>
+        <div class="step-connector" [class.active]="currentStep > 3"></div>
+        <div class="step" [class.active]="currentStep >= 4" [class.completed]="currentStep > 4">
+          <div class="step-number">4</div>
+          <div class="step-label">Review</div>
         </div>
       </div>
+    </div>
 
-      <aside class="order-summary price-block">
-        <h3>Order Summary ({{totalItems()}} items)</h3>
-        <div *ngFor="let item of cartItems()" class="summary-item">
-          <div>
-            <div class="product-name">{{item.name}}</div>
-            <div class="product-meta">{{item.quantity}} x ${{item.price.toFixed(2)}}</div>
+    <!-- Order Confirmation -->
+    <div *ngIf="isOrdered" class="order-confirmation-container">
+      <div class="confirmation-icon">✓</div>
+      <h2>Thank you for your order!</h2>
+      <p class="confirmation-order-id">Order #{{orderNumber}}</p>
+      <p class="confirmation-message">Your order has been confirmed and you'll receive updates via email.</p>
+      <p class="confirmation-redirect">Redirecting to your orders in a few seconds...</p>
+      <button routerLink="/orders" class="btn-primary">View Your Orders</button>
+    </div>
+
+    <!-- Main Checkout Content -->
+    <div *ngIf="!isOrdered" class="checkout-main">
+      <!-- Left Column: Forms -->
+      <div class="checkout-forms">
+        <!-- Step 1: Shipping Address -->
+        <section class="checkout-step" [class.collapsed]="currentStep > 1">
+          <div class="step-header" (click)="editStep(1)" *ngIf="currentStep > 1">
+            <div class="step-title">
+              <span class="step-badge">1</span>
+              <h3>Shipping Address</h3>
+              <p class="step-preview" *ngIf="selectedAddress()">{{selectedAddress()?.name}}, {{selectedAddress()?.address}}</p>
+            </div>
+            <button type="button" class="btn-edit">Edit</button>
           </div>
-          <div class="product-price">${{(item.price * item.quantity).toFixed(2)}}</div>
+          <div class="step-content" *ngIf="currentStep <= 1">
+            <app-shipping-address
+              [savedAddresses]="savedAddresses()"
+              [selectedAddress]="selectedAddress()"
+              (addressSelected)="onAddressSelected($event)"
+              (addressAdded)="onAddressAdded($event)"
+              (addressDeleted)="onAddressDeleted($event)">
+            </app-shipping-address>
+
+            <button type="button" class="btn-primary" (click)="nextStep()" [disabled]="!isAddressComplete()" style="margin-top: 16px;">
+              Continue to Shipping
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 2: Shipping Method -->
+        <section class="checkout-step" [class.collapsed]="currentStep > 2" [class.inactive]="currentStep < 2">
+          <div class="step-header" (click)="editStep(2)" *ngIf="currentStep > 2">
+            <div class="step-title">
+              <span class="step-badge">2</span>
+              <h3>Shipping Method</h3>
+              <p class="step-preview">Free Delivery by {{estimatedDeliveryDate}}</p>
+            </div>
+            <button type="button" class="btn-edit">Edit</button>
+          </div>
+          <div class="step-content" *ngIf="currentStep >= 2 && currentStep <= 2">
+            <div class="shipping-options">
+              <div class="shipping-option selected">
+                <div class="option-radio"></div>
+                <div class="option-details">
+                  <h4>Free Shipping</h4>
+                  <p>Delivery by {{estimatedDeliveryDate}}</p>
+                </div>
+                <div class="option-price">FREE</div>
+              </div>
+            </div>
+            <button type="button" class="btn-primary" (click)="nextStep()">
+              Continue to Payment
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 3: Payment Method -->
+        <section class="checkout-step" [class.collapsed]="currentStep > 3" [class.inactive]="currentStep < 3">
+          <div class="step-header" (click)="editStep(3)" *ngIf="currentStep > 3">
+            <div class="step-title">
+              <span class="step-badge">3</span>
+              <h3>Payment Method</h3>
+              <p class="step-preview">{{selectedPaymentMethod}}</p>
+            </div>
+            <button type="button" class="btn-edit">Edit</button>
+          </div>
+          <div class="step-content" *ngIf="currentStep >= 3 && currentStep <= 3">
+            <div class="payment-options">
+              <label class="payment-option" [class.selected]="selectedPaymentMethod === 'Credit Card'">
+                <input type="radio" name="payment" value="Credit Card" [(ngModel)]="selectedPaymentMethod" />
+                <div class="payment-icon">💳</div>
+                <div class="payment-label">Credit Card</div>
+              </label>
+              <label class="payment-option" [class.selected]="selectedPaymentMethod === 'Debit Card'">
+                <input type="radio" name="payment" value="Debit Card" [(ngModel)]="selectedPaymentMethod" />
+                <div class="payment-icon">💳</div>
+                <div class="payment-label">Debit Card</div>
+              </label>
+              <label class="payment-option" [class.selected]="selectedPaymentMethod === 'PayPal'">
+                <input type="radio" name="payment" value="PayPal" [(ngModel)]="selectedPaymentMethod" />
+                <div class="payment-icon">🅿️</div>
+                <div class="payment-label">PayPal</div>
+              </label>
+            </div>
+            <p class="demo-note">💡 This is a demo. No actual payment processing occurs.</p>
+            <button type="button" class="btn-primary" (click)="nextStep()">
+              Review Your Order
+            </button>
+          </div>
+        </section>
+
+        <!-- Step 4: Order Review -->
+        <section class="checkout-step" [class.inactive]="currentStep < 4">
+          <div class="step-content" *ngIf="currentStep >= 4">
+            <h3 class="step-title-full">Review Your Order</h3>
+            
+            <div class="review-section">
+              <h4>Shipping Address</h4>
+              <p *ngIf="selectedAddress()">{{selectedAddress()?.name}}</p>
+              <p *ngIf="selectedAddress()">{{selectedAddress()?.address}}</p>
+              <p *ngIf="selectedAddress()">{{selectedAddress()?.city}}</p>
+              <p *ngIf="selectedAddress()">{{selectedAddress()?.phone}}</p>
+            </div>
+
+            <div class="review-section">
+              <h4>Shipping Method</h4>
+              <p>Free Shipping - Delivery by {{estimatedDeliveryDate}}</p>
+            </div>
+
+            <div class="review-section">
+              <h4>Payment Method</h4>
+              <p>{{selectedPaymentMethod}}</p>
+            </div>
+
+            <div class="review-items">
+              <h4>Items ({{totalItems()}})</h4>
+              <div *ngFor="let item of cartItems()" class="review-item">
+                <div class="review-item-name">{{item.name}}</div>
+                <div class="review-item-qty">{{item.quantity}}x</div>
+                <div class="review-item-price">${{(item.price * item.quantity).toFixed(2)}}</div>
+              </div>
+            </div>
+
+            <button type="button" class="btn-primary btn-large" (click)="placeOrder()">
+              Place Your Order
+            </button>
+            <button type="button" class="btn-secondary" (click)="previousStep()">
+              Back
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Order Summary Sticky -->
+      <aside class="order-summary-sticky">
+        <div class="summary-header">
+          <h3>Order Summary</h3>
+          <p class="summary-item-count">{{totalItems()}} {{totalItems() === 1 ? 'item' : 'items'}}</p>
         </div>
 
-        <div class="summary-total">
-          <span>Subtotal:</span>
-          <span class="value">${{totalPrice().toFixed(2)}}</span>
-        </div>
-        <div class="summary-total">
-          <span>Shipping:</span>
-          <span class="value">Free</span>
-        </div>
-        <div class="summary-total" style="font-size:1.15rem; margin-top:8px;">
-          <span>Total:</span>
-          <span class="value">${{totalPrice().toFixed(2)}}</span>
+        <div class="summary-items">
+          <div *ngFor="let item of cartItems()" class="summary-item-card">
+            <div class="item-info">
+              <p class="item-name">{{item.name}}</p>
+              <p class="item-qty">Qty: {{item.quantity}}</p>
+            </div>
+            <p class="item-subtotal">${{(item.price * item.quantity).toFixed(2)}}</p>
+          </div>
         </div>
 
-        <div class="checkout-actions" style="margin-top:14px;">
-          <button type="button" class="btn-place-order" (click)="placeOrder()" [disabled]="shippingForm.invalid || cartItems().length === 0">Place your order</button>
+        <div class="summary-divider"></div>
+
+        <div class="summary-pricing">
+          <div class="pricing-row">
+            <span>Subtotal</span>
+            <span>${{totalPrice().toFixed(2)}}</span>
+          </div>
+          <div class="pricing-row">
+            <span>Shipping</span>
+            <span class="free-shipping">FREE</span>
+          </div>
+          <div class="pricing-row">
+            <span>Tax</span>
+            <span>${{(totalPrice() * 0.08).toFixed(2)}}</span>
+          </div>
         </div>
 
-        <div class="small-note">By placing your order you agree to our Terms and Conditions.</div>
+        <div class="summary-total-price">
+          <span>Order Total</span>
+          <span>${{(totalPrice() * 1.08).toFixed(2)}}</span>
+        </div>
+
+        <div class="summary-security">
+          <p>🔒 Secure checkout</p>
+          <p>Your payment information is encrypted and secure</p>
+        </div>
       </aside>
     </div>
   </div>
